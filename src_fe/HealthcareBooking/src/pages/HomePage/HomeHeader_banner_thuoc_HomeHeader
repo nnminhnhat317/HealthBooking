@@ -1,0 +1,75 @@
+<div className="home-header-banner h-[486px] bg-[url('@/assets/images/banner-homepage1.jpg')] bg-no-repeat bg-cover bg-center flex flex-col opacity-95">
+        <div className="content-up h-[65%] bg-[linear-gradient(rgba(0,0,0,0.25),rgba(255,255,255,0.1))]">
+          <div className="title1 text-center text-[30px] text-white shadow-[1px_1px_1px_#333] mb-[15px] mt-[20px]">
+            {/* <FormattedMessage id="banner.title1" /> */}
+            NẾN TẢNG Y TẾ
+          </div>
+          <div className="title2 text-center text-[30px] text-white shadow-[1px_1px_1px_#333] mb-[15px]">
+            {/* <FormattedMessage id="banner.title2" /> */}
+            CHĂM SÓC SỨC KHỎE TOÀN DIỆN
+          </div>
+          {/* <div className="search">
+                <i className="fas fa-search"></i>
+                <input type="text" placeholder="Tìm chuyên khoa khám bệnh" 
+                />
+              </div> */}
+        </div>
+        <div className="content-down h-[35%] flex items-end justify-center bg-gradient-to-b from-[rgba(255,255,255,0.1)] via-[rgba(255,255,255,0.9)] to-white pb-[10px]">
+          <div className="options flex text-center flex-row gap-[50px] justify-center items-center">
+            <div className="option-child w-[100px] text-center">
+              <div className="icon-child bg-white w-10 h-10 p-2 rounded-full mx-auto">
+                <Hospital className="text-[20px] text-[#49bce2]" />
+              </div>
+              <div className="text-child text-[15px] font-semibold cursor-pointer hover:text-[#49bce2]">
+                {/* <FormattedMessage id="banner.specialist-examination" /> */}
+                Khám Chuyên Khoa
+              </div>
+            </div>
+            <div className="option-child">
+              <div className="icon-child">
+                <i className="fas fa-mobile-alt"></i>
+              </div>
+              <div className="text-child">
+                {/* <FormattedMessage id="banner.telemedicine" /> */}
+                Khám Từ Xa
+              </div>
+            </div>
+            <div className="option-child">
+              <div className="icon-child">
+                <i className="fas fa-procedures"></i>
+              </div>
+              <div className="text-child">
+                {/* <FormattedMessage id="banner.general-examination" /> */}
+                Khám Tổng Quát
+              </div>
+            </div>
+            <div className="option-child">
+              <div className="icon-child">
+                <i className="fas fa-flask"></i>
+              </div>
+              <div className="text-child">
+                {/* <FormattedMessage id="banner.medical-testing" /> */}
+                Xét Nghiệm Y Học
+              </div>
+            </div>
+            <div className="option-child">
+              <div className="icon-child">
+                <i className="fas fa-user-md"></i>
+              </div>
+              <div className="text-child">
+                {/* <FormattedMessage id="banner.mental-health" /> */}
+                Sức Khỏe Tinh Thần
+              </div>
+            </div>
+            <div className="option-child">
+              <div className="icon-child">
+                <i className="fas fa-teeth"></i>
+              </div>
+              <div className="text-child">
+                {/* <FormattedMessage id="banner.dental-examination" /> */}
+                Khám Nha Khoa
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
