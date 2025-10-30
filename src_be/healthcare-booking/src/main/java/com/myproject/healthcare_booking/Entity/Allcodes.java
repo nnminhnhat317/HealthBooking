@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Data
 @Table(name = "allcodes", uniqueConstraints =
-        {@UniqueConstraint(columnNames = {"keyCode", "type"})}
+        {@UniqueConstraint(columnNames = {"keyMap", "type"})}
 )
 public class Allcodes {
     @Id
