@@ -2,13 +2,12 @@ import { BrowserRouter } from "react-router";
 import { Routes, Route } from "react-router";
 import { Fragment } from "react";
 import { publicRoutes, privateRoutes } from "./routes/index.tsx";
-import './App.css'
-import {DefaultLayout} from "./components/Layout/DefaultLayout";
-
+import "./App.css";
+import { DefaultLayout } from "./components/Layout/DefaultLayout";
+import { ProtectedRoute } from "./components/Admin/ProtectRoute.tsx";
 function App() {
-
   return (
-      <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         {publicRoutes.map((route, index) => {
           let Layout = DefaultLayout;
@@ -31,10 +30,10 @@ function App() {
             />
           );
         })}
-        
+
         {/* Các privateRoutes cần đăng nhập mới vào được */}
 
-        {/* {privateRoutes.map((route, index) => {
+        {privateRoutes.map((route, index) => {
           let Layout = DefaultLayout;
           if (route.layout) {
             Layout = route.layout;
@@ -47,7 +46,7 @@ function App() {
               key={index}
               path={route.path}
               element={
-                <ProtectedRoute allowedRoles={["admin","user"]}>
+                <ProtectedRoute allowedRoles={["R1"]}>
                   <Layout>
                     <Page />
                   </Layout>
@@ -55,11 +54,10 @@ function App() {
               }
             />
           );
-        })} */}
-
+        })}
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -5,6 +5,7 @@ import { HomePage } from "@/pages/HomePage/HomePage";
 import { EmptyLayout } from "@/components/Layout/EmptyLayout";
 import { DetailClinic } from "@/pages/DetailClinic";
 import { TestPage } from "@/pages/TestPage";
+import { AdminPage } from "@/pages/AdminPage";
 const publicRoutes = [
   { path: "/", component: HomePage, layout: DefaultLayout },
   { path: "/login", component: LoginPage, layout: EmptyLayout },
@@ -13,7 +14,7 @@ const publicRoutes = [
 ];
 
 const privateRoutes = [
-  // { path: "/", component: Home, layout: DefaultLayout },
+  { path: "/user-manage", component: AdminPage, layout: AdminLayout },
 ];
 
 export { publicRoutes, privateRoutes };

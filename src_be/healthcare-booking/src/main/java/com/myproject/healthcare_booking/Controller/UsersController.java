@@ -40,7 +40,7 @@ public class UsersController {
             String token = jwtUtils.generateToken(userdb.getEmail(), userdb.getRole().getKeyMap());
             //Trả về JWT token dưới dạng JSON cho client qua reponse
             Map<String, Object> response = new HashMap<>();
-            response.put("username", userdb.getEmail());
+            response.put("email", userdb.getEmail());
             response.put("roleId", userdb.getRole().getKeyMap());
             response.put("token", token);
             ResponseEntity.ok().body(response);

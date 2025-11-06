@@ -24,9 +24,10 @@ public class Users {
     @Lob
     private String image;
     @ManyToOne //(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roleId", referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_role"))
+//    name = "role_id",
+    @JoinColumn(name = "role_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_role"))
     private Allcodes role;
     @ManyToOne //(fetch = FetchType.LAZY)
-    @JoinColumn(name = "positionId", referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"))
+    @JoinColumn(name = "position_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"))
     private Allcodes position;
 }
