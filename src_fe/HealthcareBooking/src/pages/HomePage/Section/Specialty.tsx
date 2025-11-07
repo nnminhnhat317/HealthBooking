@@ -2,8 +2,6 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 // import { FormattedMessage } from "react-intl";
-
-// shadcn/ui components
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -53,7 +51,7 @@ export default function Specialty() {
     },
   ]);
   const navigate = useNavigate();
-//   const [items, setItems] = useState<SpecialtyItem[]>([]);
+  // const [items, setItems] = useState<SpecialtyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
     // call API
@@ -87,7 +85,7 @@ export default function Specialty() {
   return (
     <div className="w-full bg-gray-100 py-8">
       <div className="mx-auto max-w-6xl px-4">
-        <header className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">
             {/* <FormattedMessage id="homepage.specialty-popular" defaultMessage="Popular specialties" /> */}
             Chuyên khoa phổ biến
@@ -96,7 +94,7 @@ export default function Specialty() {
           {/* <Button variant="secondary" size="sm">
             <FormattedMessage id="homepage.more-infor" defaultMessage="More info" />
           </Button> */}
-        </header>
+        </div>
 
         <div>
           {error && (

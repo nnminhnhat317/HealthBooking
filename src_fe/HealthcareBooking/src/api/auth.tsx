@@ -5,6 +5,7 @@ interface LoginRequestType {
     password: string;
 }
 interface LoginResponseType {
+  id: string;
   token: string;
   email: string;
   roleId: string;
@@ -21,7 +22,5 @@ export const loginApi = async (
   data: LoginRequestType
 ): Promise<LoginResponseType> => {
   const response = await API.post<LoginResponseType>("/login", data); //post<> khai báo kiểu dữ liệu trả về từ BE
-  return response.data; // { token, username, roleId }
+  return response.data; // { id, token, email, roleId }
 };
-//await sẽ tạm dừng việc thực thi các dòng code tiếp theo trong hàm async,
-//cho đến khi Promise phía sau nó (ở đây là API.post(...)) hoàn tất:

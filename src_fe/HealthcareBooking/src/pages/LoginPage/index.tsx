@@ -33,6 +33,7 @@ export function LoginPage({
       console.log("Login success:", response);
 
       // Lưu token hoặc thông tin user vào localStorage
+      localStorage.setItem("id", response.id);
       localStorage.setItem("token", response.token);
       localStorage.setItem("email", response.email);
       localStorage.setItem("roleId", response.roleId);
@@ -88,16 +89,15 @@ export function LoginPage({
               </div>
 
               {error && <div className="text-sm text-red-600">{error}</div>}
-              {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Logging in..." : "Login"}
                   {/* Login */}
                 </Button>
-                <Button variant="outline" className="w-full">
+                {/* <Button variant="outline" className="w-full">
                   Login with Google
-                </Button>
+                </Button> */}
               </div>
             </div>
             {/* <div className="mt-4 text-center text-sm">
