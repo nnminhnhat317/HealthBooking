@@ -1,0 +1,37 @@
+RAG Pipline
+# Bước 1: Tạo kết nối client openai 
+# Bước 2: Tạo kết nối client chroma và nơi lưu trữ và tạo collection bằng embedding của openai
+# Bước 3: Tạo hàm load file từ folder vào biến để xử lý
+# Bước 4: Tạo hàm chunks với hàm split_text thủ công
+# Bước 5: Sử dụng hàm load file và tạo chunks với hàm tại bước 3+4
+# Bước 6: Định nghĩa hàm gửi dữ liệu text đã tiền xử lý và gọi api openai, tạo embedding
+# Bước 6.1: Dùng hàm bước 6 để tạo từ ds chunks_documents có chứa dữ liệu vector số (embeddings)
+# Bước 7: Lưu dữ liệu embeddings với ds chunks_documents vào vectorDB
+# Bước 8: Tạo hàm truy vấn bằng phương thức .query() rồi lọc ds, duyệt qua và lưu các đoạn chunk của thuộc tính [documents] vào relevant_chunks
+# Bước 9: Tạo hàm response với 2 tham số là relevant_chunk và question. Sau đó thực thi hàm 
+
+Cách thay đổi tài liệu để truy vấn .query()
+1. vectordb/createCollection.py  Thay đổi collection name
+2. app.py Thay dir_path để hàm load_documents_from_directory() tải đúng tài liệu cần truy vấn
+
+Câu hỏi đặt ra (?)
+#file __pycache la gi ?
+#Khi bạn chạy chương trình Python
+#Khi bạn import một module Python
+#Khi bạn build package
+
+# Tạo collection dùng embedding function openai sử dụng cho việc tạo embedding đầu vào
+# và tạo embedding cho documents sau khi split_text chỉ để tạo embedding lưu vào collection phải không 
+
+Advanced RAG Pipeline
+#pip install python-dotenv openai pypdf umap-learn matplotlib
+
+Việc cần làm trước khi test dữ liệu mới
+# Đổi đường dẫn path của Persistent, và Collection khi lưu trữ tránh nhầm lẫn dữ liệu /vectordb/createCollection.py
+# Sửa Prompt cho hypothetical answer trong hàm generate_multi_query
+# Sửa original question - câu hỏi đầu vào
+Chú ý thư mục
+# chunkfunc/split_text.py : Hàm tách văn bản thành các đoạn nhỏ, chỉ áp dụng cho NaiveRAG - cho file app.py 
+#Vì Advanced RAG sử dụng Chroma có sẵn hàm tách văn bản
+# loaders/loadtxt.py : Hàm load tài liệu định dạng txt ta tạo thủ công. Dùng cho dự án NaiveRAG(app.py).
+#Còn về AdvancedRAG đã sử dụng các hàm có sẵn như PyPDFLoader, UnstructuredPDFLoader trong langchain để load tài liệu PDF hoặc PdfReader của pypdf

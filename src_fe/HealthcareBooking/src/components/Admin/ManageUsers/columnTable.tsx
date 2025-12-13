@@ -10,14 +10,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-export interface Users {
-  email:string;
-  firstName:string;
-  lastName:string;
-}
+import type { UserFormData } from "@/types/users";
 
-export const columns: ColumnDef<Users>[] = [
+export const columns: ColumnDef<UserFormData>[] = [
   {
     accessorKey: "email",
     header: "Email",
@@ -26,33 +33,70 @@ export const columns: ColumnDef<Users>[] = [
     accessorKey: "firstName",
     header: "First Name",
   },
-  { 
+  {
     accessorKey: "lastName",
     header: "Last Name",
   },
   {
+    accessorKey: "address",
+    header: "Address",
+  },
+  {
+    accessorKey: "gender",
+    header: "Gender",
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "roleId",
+    header: "Role ID",
+  },
+  {
+    accessorKey: "positionId",
+    header: "Position ID",
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+  },
+
+  {
+    header: "Actions",
     id: "actions",
     cell: ({ row }) => {
-      const info = row.original;//dùng đê lấy dữ liệu của 1 dòng trong bảng hiện tại
+      const info = row.original; //dùng đê lấy dữ liệu của 1 dòng trong bảng hiện tại
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
-            <DropdownMenuItem
-            //   onClick={() => navigate(`/h/detail/${info.employee.id}`)}
-            >
-              Details
-            </DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>View customer</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex flex-row gap-2">
+          <Button
+          // onClick={() => onEdit(employee.id)}
+          >
+            Edit
+          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Bạn chắc chắn để xóa chưa ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Xóa toàn bộ thông tin về dữ liệu nhân viên này !
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                // onClick={() => onDelete(employee.id)}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       );
     },
   },

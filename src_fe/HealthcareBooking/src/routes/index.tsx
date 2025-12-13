@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/Layout/AdminLayout";
 import { LoginPage } from "@/pages/LoginPage/index";
 import { HomePage } from "@/pages/HomePage/HomePage";
 import { EmptyLayout } from "@/components/Layout/EmptyLayout";
-import { DetailClinic } from "@/pages/DetailClinic";
+import { DetailClinic } from "@/pages/DetailClinic/index";
 import { TestPage } from "@/pages/TestPage";
 import { AdminPage } from "@/pages/AdminPage";
 const publicRoutes = [

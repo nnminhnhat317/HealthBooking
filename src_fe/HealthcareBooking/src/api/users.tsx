@@ -46,6 +46,6 @@ export const addUsersApi = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi khi thêm nhân viên:", error);
+    console.error("Lỗi API create users:", error);
   }
 };

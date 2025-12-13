@@ -2,6 +2,7 @@ package com.myproject.healthcare_booking.Controller;
 
 import com.myproject.healthcare_booking.Entity.Users;
 import com.myproject.healthcare_booking.Service.UsersService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,12 @@ public class UsersController {
     @GetMapping("/list")
     public ResponseEntity<List<Users>> getAllUsers() {
         return ResponseEntity.ok(usersService.getAllUsers());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Users> createUser(@RequestBody Users u) {
+        Users savedUser= usersService.createUsers(u);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
 }

@@ -11,6 +11,7 @@ export const AdminPage = () => {
   const getAllUsers = async () => {
     try {
       const data = await getUsersListApi();
+      console.log("Data tai AdminPage:", data);
       setUsers(data);
     } catch (error) {
       console.error("Lỗi tai data len table pages/AdminPage", error);
