@@ -1,11 +1,13 @@
 package com.myproject.healthcare_booking.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,11 +24,20 @@ public class Users {
     private String gender;
     private String phoneNumber;
     @Lob
-    private String image;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String image; // duong dan luu anh
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_role"),  nullable = false)
     private Allcodes role;
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"),  nullable = false)
     private Allcodes position;
+
+    @OneToOne(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("doctor")
+    private DoctorInfo doctorInfor;
+
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("doctor")
+    private List<DoctorClinicSpecialty> doctorClinicSpecialties;
 }

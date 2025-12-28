@@ -1,3 +1,12 @@
+import { Calendar22 } from "@/components/General/DatePicker";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import type { Schedule } from "@/types/schedule";
+import { getScheduleByDateApi } from "@/api/schedule";
+import { getUsersIdAp } from "@/api/users";
+import { getMarkdownApi } from "@/api/markdown";
+import { TestPage } from "@/pages/TestPage";
+import type { DoctorDetail } from "@/types/users";
 export const SectionInfo: React.FC = () => {
   const doctor = {
     id: 1,
@@ -21,19 +30,95 @@ export const SectionInfo: React.FC = () => {
     price: 500000,
     insurance: "Có hỗ trợ",
   };
+  // Đoạn code lấy ID từ URL với useParam khi navigate lấy thông tin nhân viên tại vị trí đó lưu
+  //vào useState doctorId
+  const { id } = useParams(); // lấy id từ URL
+  const convertIdfromUseParam = (id: string | undefined) => {
+    const numericId = Number(id); //chuyển kiểu string|undefined sang number
+    return numericId;
+  };
+  // const today = new Date().toISOString().split("T")[0];
+  // const doctorId = convertIdfromUseParam(id);
+  const doctorId = Number(7); // hard code tạm thời
+  // const [selectedDate, setSelectedDate] = useState<string>(today);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [doctorInfor, setDoctorInfor] = useState<DoctorDetail>();
+  // const [slots, setSlots] = useState<Schedule[]>([]);
+
+  const fetchDoctorDate = async (doctorId: number, date: Date) => {
+    try {
+      // const data = await getScheduleByDateApi(doctorId, date); // gọi 1 api lấy lịch khám theo doctorId và date
+      // setSchedules(data);
+
+      const data = await getScheduleByDateApi(doctorId, date);
+      setSchedules(data);
+      console.log("data schedule by date", data);
+      const data2 = await getUsersIdAp(doctorId);
+      console.log("data DoctorDetail", data2);
+      setDoctorInfor(data2);
+      const data3 = await getMarkdownApi(doctorId);
+      console.log("data markdown", data3);
+    } catch (error) {
+      console.error(
+        "Lỗi khi tải dữ liệu tại component Doctor SectionInfo:",
+        error
+      );
+    }
+  };
+  useEffect(() => {
+    fetchDoctorDate(doctorId, selectedDate);
+  }, [doctorId, selectedDate]);
+// Các useState lưu mảng allPrices, allProvinces, allPayments
+const [provinces, setAllProvinces] = useState<{ keyMap: string; value: string }[]>([]);
+const [payments, setAllPayments] = useState<{ keyMap: string; value: string }[]>([]);
+// Gọi api lấy allPrices, allProvinces, allPayments
+//   useEffect(() => {
+//   const fetchData = async () => {
+//     const prices = await fetchAllPrices();
+//     const provinces = await fetchAllProvinces();
+//     const payments = await fetchAllPayments();
+
+//     setAllPrices(prices);
+//     setAllProvinces(provinces);
+//     setAllPayments(payments);
+//   };
+
+//   fetchData();
+// }, []);
+
+// Tạo object map mới với cấu trúc key:value (key_map:value) từ mảng api đã gọi (price,province,payment) để truy cập nhanh
+// const provinceMap = provinces.reduce((acc, p) => {
+//   acc[p.keyMap] = p.value;
+//   return acc;
+// }, {});
+// const paymentMap = payments.reduce((acc, p) => {
+//   acc[p.keyMap] = p.value;
+//   return acc;
+// }, {});
+// Sử dụng trong JSX
+// provinceMap[doctorInfor.provinceId] 
+// paymentMap[doctorInfor.paymentId]
+//
+  const handleChildValueChange = (date: Date) => {
+    setSelectedDate(date);
+    console.log("Tải dữ liệu lịch khám theo ngày:", date);
+  };
 
   return (
     <div>
-      <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      {/* <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md"> */}
+      <div className="">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row gap-6">
           {/* Avatar */}
           <div className="flex-shrink-0">
             <img
-              src={doctor.avatar}
+              src={`http://localhost:8080${doctorInfor?.image}`}
               className="w-32 h-32 rounded-full object-cover shadow"
               alt="avatar"
             />
+            {/* <TestPage/> */}
           </div>
 
           {/* Info */}
@@ -46,7 +131,6 @@ export const SectionInfo: React.FC = () => {
               <span className="font-semibold">Chuyên khám:</span>{" "}
               {doctor.ageRange}
             </p>
-
             <p className="flex items-center gap-1 text-gray-700">
               <span>📍</span> {doctor.location}
             </p>
@@ -61,16 +145,23 @@ export const SectionInfo: React.FC = () => {
 
         {/* LỊCH KHÁM */}
         <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-          Lịch khám – {doctor.scheduleDate}
+          Lịch khám - {doctor.scheduleDate}
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {doctor.timeSlots.map((slot, idx) => (
+          {/* {doctor.timeSlots.map((slot, idx) => (
             <div
               key={idx}
               className="border rounded-lg p-3 text-center hover:bg-blue-50 cursor-pointer"
-            >
+              >
               {slot}
+            </div>
+          ))} */}
+          {schedules.map((item,id) => (
+            <div 
+              key={id}
+              className="border rounded-lg p-3 text-center hover:bg-blue-50 cursor-pointer">
+              {item.time?.value}
             </div>
           ))}
         </div>
@@ -78,7 +169,7 @@ export const SectionInfo: React.FC = () => {
         <p className="mt-3 text-sm text-red-600">
           * Đây chỉ là thời gian dự kiến. Phòng khám sẽ liên hệ để xác nhận.
         </p>
-
+        <Calendar22 onDateTimeChange={handleChildValueChange} />
         <hr className="my-6" />
 
         {/* ĐỊA CHỈ */}

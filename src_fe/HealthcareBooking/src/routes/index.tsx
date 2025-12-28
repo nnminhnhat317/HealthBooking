@@ -6,10 +6,12 @@ import { EmptyLayout } from "@/components/Layout/EmptyLayout";
 import { DetailClinic } from "@/pages/DetailClinic/index";
 import { TestPage } from "@/pages/TestPage";
 import { AdminPage } from "@/pages/AdminPage";
+import { DetailDoctor } from "@/pages/DetailDoctor";
 const publicRoutes = [
   { path: "/", component: HomePage, layout: DefaultLayout },
   { path: "/login", component: LoginPage, layout: EmptyLayout },
   { path: "/clinics", component: DetailClinic, layout: DefaultLayout },
+  { path: "/detail-doctor", component: DetailDoctor, layout: DefaultLayout },
   { path: "/test-page", component: TestPage, layout: AdminLayout },
 ];
 

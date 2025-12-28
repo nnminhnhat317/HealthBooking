@@ -1,11 +1,19 @@
 package com.myproject.healthcare_booking.Controller;
 
+import com.myproject.healthcare_booking.DTO.DoctorDetailResponse;
 import com.myproject.healthcare_booking.Entity.Users;
 import com.myproject.healthcare_booking.Service.UsersService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @RestController
@@ -16,11 +24,6 @@ public class UsersController {
         this.usersService = usersService;
     }
     private final UsersService usersService;
-    @GetMapping("/{id}")
-    public ResponseEntity<Users> getUsersById(@PathVariable Integer id) {
-        Users u = usersService.getUsersById(id);
-        return ResponseEntity.ok(u);
-    }
 
     @GetMapping("/list")
     public ResponseEntity<List<Users>> getAllUsers() {
@@ -33,4 +36,32 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    @GetMapping("/{id}")
+    public DoctorDetailResponse getDoctorDetail(@PathVariable Integer id) {
+        return usersService.getDoctorDetail(id);
+    }
+    //Xu ly anh upload
+//    @Value("${image.upload.dir}")
+//    private String uploadDir;
+//    @PostMapping("/upload-avatar")
+//    public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
+//        try {
+//            // Kiểm tra loại file
+//            if (file.isEmpty()) {
+//                return ResponseEntity.badRequest().body("File is empty");
+//            }
+//
+//            // Tạo tên file duy nhất
+//            String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+//            Path filePath = Paths.get(uploadDir, fileName);
+//
+//            // Lưu file vào thư mục đã cấu hình
+//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//            // Trả về đường dẫn file đã lưu
+//            return ResponseEntity.ok("Avatar uploaded successfully: " + filePath.toString());
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body("Error uploading file");
+//        }
+//    }
 }

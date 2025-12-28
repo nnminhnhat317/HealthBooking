@@ -22,7 +22,7 @@ export const getUsersListApi = async () => {
   }
 };
 
-export const getUsersIdApi = async (id: number) => {
+export const getUsersIdAp = async (id: number) => {
   try {
     const token = localStorage.getItem("token");
     const response = await API.get(`/${id}`, {

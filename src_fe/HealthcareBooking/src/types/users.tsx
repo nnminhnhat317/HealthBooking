@@ -1,5 +1,7 @@
 import * as z from "zod";
-
+import type { AllCodes } from "./allcodes";
+import type { DoctorInfo } from "./doctor_info";
+import type { DoctorClinicSpecialty } from "./clinic_specialty";
 //usable: api users
 // export interface Users {
 //   // id: number;
@@ -14,6 +16,24 @@ import * as z from "zod";
 //   positionId: number;
 //   image?: string; // có thể null hoặc base64
 // }
+
+export interface DoctorDetail { // trang xem chi tiet bac si
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  address: string | null;
+  gender: string | null;
+  phoneNumber: string | null;
+  image: string | null;
+
+  role: AllCodes;
+  position: AllCodes;
+
+  doctorInfor: DoctorInfo | null;
+  doctorClinicSpecialties: DoctorClinicSpecialty[];
+}
+
 
 //Zod schema để validate runtime, kiểm tra khi chương trình đang chạy
 export const userFormSchema = z.object({

@@ -1,0 +1,35 @@
+package com.myproject.healthcare_booking.Repository;
+
+import com.myproject.healthcare_booking.DTO.DoctorClinicSpecialtyDTO;
+import com.myproject.healthcare_booking.Entity.DoctorClinicSpecialty;
+import com.myproject.healthcare_booking.Entity.Users;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface DoctorClinicSpecialtyRepository
+        extends JpaRepository<DoctorClinicSpecialty, Integer> {
+
+    @Query("""
+        SELECT new com.myproject.healthcare_booking.DTO.DoctorClinicSpecialtyDTO(
+            dcs.id,
+            c.id,
+            c.name,
+            c.address,
+            c.image,
+            s.id,
+            s.name,
+            s.image
+        )
+        FROM DoctorClinicSpecialty dcs
+        JOIN dcs.clinic c
+        JOIN dcs.specialty s
+        WHERE dcs.doctor.id = :doctorId
+    """)
+    List<DoctorClinicSpecialtyDTO> findDoctorClinicsSpecialtys(Integer doctorId);
+
+}

@@ -9,6 +9,16 @@ import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Integer> {
     Users findByEmail(String Email);
+
+    // Lấy thông tin user(doctor) với id (new)
+    @Query("""
+        SELECT u
+        FROM Users u
+        WHERE u.id = :id
+        AND u.role.keyMap = 'R2'
+    """)
+    Optional<Users> findDoctorById(Integer id);
+
 //    // Lấy user kèm thông tin role (EAGER FETCH hoặc JOIN FETCH)
 //    @Query("SELECT u FROM Users u JOIN FETCH u.role WHERE u.email = :email")
 //    Optional<Users> findByEmailWithRole(@Param("email") String email);

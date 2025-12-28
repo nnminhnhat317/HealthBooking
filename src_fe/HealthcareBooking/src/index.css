@@ -117,4 +117,29 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* css markdown */
+  .markdown-detail h1 {
+    @apply text-2xl font-semibold mt-4 mb-2;
+  }
+
+  .markdown-detail h2 {
+    @apply text-xl font-semibold mt-3 mb-2;
+  }
+
+  .markdown-detail p {
+    @apply mb-2 leading-relaxed text-gray-800;
+  }
+
+  .markdown-detail ul {
+    @apply list-disc pl-5 mb-2;
+  }
+
+  .markdown-detail li {
+    @apply mb-1;
+  }
+
+  /* .markdown-detail strong {
+    @apply font-semibold;
+  } */
+  /* end css markdown */
 }
