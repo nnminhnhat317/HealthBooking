@@ -6,6 +6,8 @@ import com.myproject.healthcare_booking.Repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MarkdownService {
 
@@ -27,6 +29,11 @@ public class MarkdownService {
     public Markdown getSpecialtyMarkdown(Integer specialtyId) {
         return markdownRepository.findBySpecialtyId(specialtyId)
                 .orElse(null);
+    }
+
+    //RAGwMarkdown
+    public List<Markdown> getAllSpecialtyMarkdown() {
+        return markdownRepository.findBySpecialtyIdNotNull();
     }
 }
 

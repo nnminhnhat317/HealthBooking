@@ -1,5 +1,5 @@
 import { SectionInfo } from "@/components/Doctor/SectionInfo";
-import { getMarkdownApi } from "@/api/markdown";
+import { getDoctorMarkdownApi } from "@/api/markdown";
 import { useEffect, useState } from "react";
 import type { Markdown } from "@/types/markdown";
 export const DetailDoctor: React.FC = () => {
@@ -8,11 +8,11 @@ export const DetailDoctor: React.FC = () => {
   const getMarkdown = async () => {
     try {
       // Gọi API để lấy dữ liệu markdown
-      const dataMD = await getMarkdownApi(doctorId);
+      const dataMD = await getDoctorMarkdownApi(doctorId);
       setDataMD(dataMD);
       console.log("data markdown in DetailDoctor", dataMD);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu markdown:", error);
+      console.error("Lỗi khi tải dữ liệu markdown DetailDoctor:", error);
     }
   };
   useEffect(() => {

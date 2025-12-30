@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getSpecialtyMarkdownApi } from '@/api/markdown';
 
 export function TestPage() {
 
@@ -34,7 +35,18 @@ export function TestPage() {
             console.error("Error uploading avatar:", error);
         }
     };
-
+    const getMarkdown = async () => {
+        try {
+          // Gọi API để lấy dữ liệu markdown
+          const dataMDspecialty = await getSpecialtyMarkdownApi();
+          console.log("data markdown in TestPage", dataMDspecialty);
+        } catch (error) {
+          console.error("Lỗi khi tải dữ liệu markdown DetailDoctor:", error);
+        }
+      };
+    useEffect(() => {
+        getMarkdown();
+      }, []);
     return (
         <form onSubmit={handleSubmit}>
             <input type="file" onChange={handleFileChange} />

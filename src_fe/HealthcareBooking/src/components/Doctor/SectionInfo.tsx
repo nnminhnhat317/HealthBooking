@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import type { Schedule } from "@/types/schedule";
 import { getScheduleByDateApi } from "@/api/schedule";
 import { getUsersIdAp } from "@/api/users";
-import { getMarkdownApi } from "@/api/markdown";
+import { getDoctorMarkdownApi } from "@/api/markdown";
 import { TestPage } from "@/pages/TestPage";
 import type { DoctorDetail } from "@/types/users";
 export const SectionInfo: React.FC = () => {
@@ -57,7 +57,7 @@ export const SectionInfo: React.FC = () => {
       const data2 = await getUsersIdAp(doctorId);
       console.log("data DoctorDetail", data2);
       setDoctorInfor(data2);
-      const data3 = await getMarkdownApi(doctorId);
+      const data3 = await getDoctorMarkdownApi(doctorId);
       console.log("data markdown", data3);
     } catch (error) {
       console.error(
