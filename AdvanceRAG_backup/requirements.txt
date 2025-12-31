@@ -1,3 +1,0 @@
-# For expansion_queries.py and api.py
-fastapi
-uvicorn

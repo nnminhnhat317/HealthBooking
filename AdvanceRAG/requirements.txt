@@ -1,0 +1,8 @@
+# For expansion_queries.py and api.py
+fastapi
+uvicorn
+langchain
+python-dotenv 
+sentence-transformers
+pydantic
+langchain-openai
