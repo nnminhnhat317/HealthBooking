@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,10 +24,10 @@ public class Users {
     @Lob
     @Column(columnDefinition = "MEDIUMTEXT")
     private String image; // duong dan luu anh
-    @ManyToOne //(fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_role"),  nullable = false)
     private Allcodes role;
-    @ManyToOne //(fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"),  nullable = false)
     private Allcodes position;
 

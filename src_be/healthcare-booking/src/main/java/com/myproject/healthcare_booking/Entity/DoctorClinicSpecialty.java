@@ -2,7 +2,9 @@ package com.myproject.healthcare_booking.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "doctor_clinic_specialty")
 public class DoctorClinicSpecialty {
@@ -11,7 +13,7 @@ public class DoctorClinicSpecialty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctor_id")
 //    @JsonIgnoreProperties({"doctorClinicSpecialties", "doctorInfor"})
     private Users doctor;

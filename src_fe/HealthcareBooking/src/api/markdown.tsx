@@ -35,3 +35,18 @@ export const getSpecialtyMarkdownApi = async () => {
     throw error;
   }
 };
+
+// Get specialty detail
+export const getSpecialtyIdApi = async (id:number) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await API.get(`/specialty/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

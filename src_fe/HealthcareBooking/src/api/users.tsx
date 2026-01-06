@@ -22,7 +22,7 @@ export const getUsersListApi = async () => {
   }
 };
 
-export const getUsersIdAp = async (id: number) => {
+export const getUsersIdAp = async (id: number) => { //get detail doctor for page detail doctor 
   try {
     const token = localStorage.getItem("token");
     const response = await API.get(`/${id}`, {

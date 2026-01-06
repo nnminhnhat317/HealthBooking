@@ -1,47 +1,66 @@
-import { HomeHeader } from "../HomePage/HomeHeader";
+import { useParams, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { getSpecialtyIdApi } from "@/api/markdown";
+import type { Markdown } from "@/types/markdown";
+import { getSpecListDocBySpecialtyId } from "@/api/doctorclinicspecialty";
+import type { SpecialtyDetailDTO } from "@/types/doctor_clinic_specialty";
+import DoctorBookingCard from "@/components/Doctor/DoctorBookingCard";
+
 export const DetailSpecialty: React.FC = () => {
+  //Lấy ID từ URL với useParam khi navigate
+  const { id } = useParams(); // lấy id từ URL
+  const convertIdfromUseParam = (id: string | undefined) => {
+    const numericId = Number(id); //chuyển kiểu string|undefined sang number
+    return numericId;
+  };
+  const idConverted = convertIdfromUseParam(id);
+
+  const [specialtyById, setSpecialtyId] = useState<Markdown>(); // markdown
+  const [dataListDoctorBySpecialtyId, setDataListDoctorBySpecialtyId] = useState<SpecialtyDetailDTO | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const data = await getSpecialtyIdApi(idConverted); //hàm async trả về Promise-> cần có await để Promise trả về giá trị thực của api
+      setSpecialtyId(data);
+      // console.log("Data contentMarkdown:", data);
+      const dataListDoctorBySpecialtyId = await getSpecListDocBySpecialtyId(idConverted);
+      console.log("Data listdoc:", dataListDoctorBySpecialtyId);
+      setDataListDoctorBySpecialtyId(dataListDoctorBySpecialtyId)
+    } catch (error) {
+      console.error("Lỗi khi lấy nhân viên theo ID, pages/DetailSpecialty:", error);
+    }
+  };
+  useEffect(() => {
+    //load dữ liệu vào state
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="detail-specialty-container">
-        <HomeHeader />
         <div className="detail-specialty-body px-[100px] pb-10 bg-gray-100 flex flex-col max-md:px-5">
           {/* description-specialty */}
-          <div className="description-specialty bg-white p-[20px_30px] my-5 rounded-lg shadow-md">
-            {/* {dataDetailSpecialty && !_.isEmpty(dataDetailSpecialty) && (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: dataDetailSpecialty.descriptionHTML,
-                }}
-                className="[&>h1]:text-[20px] [&>h1]:font-semibold [&>h1]:mb-2.5 [&>h1]:text-[#333]
-                     [&>h2]:text-[20px] [&>h2]:font-semibold [&>h2]:mb-2.5 [&>h2]:text-[#333]
-                     [&>h3]:text-[20px] [&>h3]:font-semibold [&>h3]:mb-2.5 [&>h3]:text-[#333]
-                     [&>p]:leading-relaxed [&>p]:text-[16px] [&>p]:text-[#555]"
-              ></div>
-            )} */}
-            Description of DetailSpecialty will be here
-          </div>
 
-          {/* search-sp-doctor */}
-          <div className="search-sp-doctor flex justify-end mb-5">
-            Select...
-            {/* <select
-              onChange={(event) => this.handleOnChangeSelect(event)}
-              className="h-[38px] px-3 border border-gray-300 rounded bg-white text-[15px] cursor-pointer transition-all duration-200 ease-in-out hover:border-gray-500 hover:bg-gray-50"
-            >
-              {listProvince &&
-                listProvince.length > 0 &&
-                listProvince.map((item, index) => {
-                  return (
-                    <option key={index} value={item.keyMap}>
-                      {language === LANGUAGES.VI ? item.valueVi : item.valueEn}
-                    </option>
-                  );
-                })}
-            </select> */}
-          </div>
+          {specialtyById?.contentHtml && (
+            <div
+              dangerouslySetInnerHTML={{ __html: specialtyById.contentHtml }}
+              className="markdown-detail w-full min-h-[300px] my-4 p-2.5 bg-white shadow-md rounded-lg"
+            ></div>
+          )}
 
+          
           {/* each-doctor */}
           Render List Doctor
+          {/* Phần Danh sách Bác sĩ */}
+          <div className="doctor-list" style={{ marginTop: "20px" }}>
+            {dataListDoctorBySpecialtyId?.doctors && dataListDoctorBySpecialtyId.doctors.length > 0 ? (
+              dataListDoctorBySpecialtyId.doctors.map((doc) => (
+                <DoctorBookingCard key={doc.id} doctor={doc} />
+              ))
+            ) : (
+              <p>Hiện chưa có bác sĩ nào thuộc chuyên khoa này.</p>
+            )}
+          </div>
           {/* {arrDoctorId &&
             arrDoctorId.length > 0 &&
             arrDoctorId.map((item, index) => {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 
 @Entity
 @Data
@@ -22,14 +21,17 @@ public class DoctorInfo {
     @JsonIgnoreProperties({"doctorInfor", "doctorClinicSpecialties"})
     private Users doctor;
 
-    @Column(name = "price_id")
-    private String priceId;
+    @ManyToOne //(fetch = FetchType.LAZY)
+    @JoinColumn(name = "price_id",referencedColumnName = "keyMap")
+    private Allcodes priceId;
 
-    @Column(name = "province_id")
-    private String provinceId;
+    @ManyToOne //(fetch = FetchType.LAZY)
+    @JoinColumn(name = "province_id",referencedColumnName = "keyMap")
+    private Allcodes provinceId;
 
-    @Column(name = "payment_id")
-    private String paymentId;
+    @ManyToOne //(fetch = FetchType.EAGER)
+    @JoinColumn(name = "payment_id",referencedColumnName = "keyMap")
+    private Allcodes paymentId;
 
     private String note;
     private Integer count;

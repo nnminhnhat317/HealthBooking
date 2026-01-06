@@ -32,7 +32,7 @@ public class UsersService {
         Users user = usersRepository.findDoctorById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        DoctorInfoDTO doctorInfo =
+        DoctorInfoDTO doctorInfor =
                 diRepository.findDoctorInfo(doctorId);
 
         List<DoctorClinicSpecialtyDTO> dcs =
@@ -49,7 +49,7 @@ public class UsersService {
                 user.getPhoneNumber(),
                 user.getPosition(),
                 user.getImage(),
-                doctorInfo,
+                doctorInfor,
                 dcs
 
         );
@@ -89,13 +89,6 @@ public class UsersService {
 //            throw new RuntimeException("Users not found " + id);
 //        }
 //        UsersRepository.deleteById(id);
-//    }
-
-    // Lấy User trả về DoctorInfo và DoctorClinicSpectialty (lỗi)
-//    @Transactional(readOnly = true) //đảm bảo Hibernate không lỗi khi serialize entity
-//    public Users getUserById(Integer id) {
-//        return usersRepository.findUserDetailById(id)
-//                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 //    }
 
 }

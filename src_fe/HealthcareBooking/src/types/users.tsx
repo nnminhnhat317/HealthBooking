@@ -1,7 +1,7 @@
 import * as z from "zod";
 import type { AllCodes } from "./allcodes";
-import type { DoctorInfo } from "./doctor_info";
-import type { DoctorClinicSpecialty } from "./clinic_specialty";
+import type { DoctorInfor } from "./doctor_info";
+import type { DoctorClinicSpecialtyDTO } from "./doctor_clinic_specialty";
 //usable: api users
 // export interface Users {
 //   // id: number;
@@ -25,13 +25,13 @@ export interface DoctorDetail { // trang xem chi tiet bac si
   address: string | null;
   gender: string | null;
   phoneNumber: string | null;
-  image: string | null;
+  image: string | undefined;
 
   role: AllCodes;
   position: AllCodes;
 
-  doctorInfor: DoctorInfo | null;
-  doctorClinicSpecialties: DoctorClinicSpecialty[];
+  doctorInfor: DoctorInfor | null;
+  clinics: DoctorClinicSpecialtyDTO[];
 }
 
 

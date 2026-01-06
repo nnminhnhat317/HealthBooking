@@ -7,11 +7,15 @@ import { DetailClinic } from "@/pages/DetailClinic/index";
 import { TestPage } from "@/pages/TestPage";
 import { AdminPage } from "@/pages/AdminPage";
 import { DetailDoctor } from "@/pages/DetailDoctor";
+import  AllSpecialties  from "@/pages/AllSpecialties"
+import { DetailSpecialty } from "@/pages/DetailSpecialty";
 const publicRoutes = [
   { path: "/", component: HomePage, layout: DefaultLayout },
   { path: "/login", component: LoginPage, layout: EmptyLayout },
-  { path: "/clinics", component: DetailClinic, layout: DefaultLayout },
-  { path: "/detail-doctor", component: DetailDoctor, layout: DefaultLayout },
+  { path: "/clinics", component: DetailClinic, layout: DefaultLayout }, // clinic
+  { path: "/detail-doctor", component: DetailDoctor, layout: DefaultLayout }, // chi tiet doctor
+  { path: "/specialty/:id", component: DetailSpecialty, layout: DefaultLayout }, //chi tiet specialty
+  { path: "/all-specialties", component: AllSpecialties, layout: DefaultLayout }, // list specialty
   { path: "/test-page", component: TestPage, layout: AdminLayout },
 ];
 

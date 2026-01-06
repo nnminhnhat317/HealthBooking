@@ -40,28 +40,5 @@ public class UsersController {
     public DoctorDetailResponse getDoctorDetail(@PathVariable Integer id) {
         return usersService.getDoctorDetail(id);
     }
-    //Xu ly anh upload
-//    @Value("${image.upload.dir}")
-//    private String uploadDir;
-//    @PostMapping("/upload-avatar")
-//    public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
-//        try {
-//            // Kiểm tra loại file
-//            if (file.isEmpty()) {
-//                return ResponseEntity.badRequest().body("File is empty");
-//            }
-//
-//            // Tạo tên file duy nhất
-//            String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
-//            Path filePath = Paths.get(uploadDir, fileName);
-//
-//            // Lưu file vào thư mục đã cấu hình
-//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//            // Trả về đường dẫn file đã lưu
-//            return ResponseEntity.ok("Avatar uploaded successfully: " + filePath.toString());
-//        } catch (IOException e) {
-//            return ResponseEntity.status(500).body("Error uploading file");
-//        }
-//    }
+
 }
