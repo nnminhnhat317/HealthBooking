@@ -56,5 +56,5 @@ public interface DoctorClinicSpecialtyRepository
             "LEFT JOIN FETCH di.paymentId " +
             "WHERE s.id = :specialtyId")
     List<DoctorClinicSpecialty> findAllBySpecialtyId(@Param("specialtyId") Integer specialtyId);
-    
+
 }
