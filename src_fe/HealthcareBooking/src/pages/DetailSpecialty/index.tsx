@@ -48,11 +48,9 @@ export const DetailSpecialty: React.FC = () => {
             ></div>
           )}
 
-          
           {/* each-doctor */}
-          Render List Doctor
           {/* Phần Danh sách Bác sĩ */}
-          <div className="doctor-list" style={{ marginTop: "20px" }}>
+          <div className="doctor-list mt-[20px]" >
             {dataListDoctorBySpecialtyId?.doctors && dataListDoctorBySpecialtyId.doctors.length > 0 ? (
               dataListDoctorBySpecialtyId.doctors.map((doc) => (
                 <DoctorBookingCard key={doc.id} doctor={doc} />
@@ -61,35 +59,6 @@ export const DetailSpecialty: React.FC = () => {
               <p>Hiện chưa có bác sĩ nào thuộc chuyên khoa này.</p>
             )}
           </div>
-          {/* {arrDoctorId &&
-            arrDoctorId.length > 0 &&
-            arrDoctorId.map((item, index) => {
-              return (
-                <div
-                  className="each-doctor flex flex-row w-full min-h-[300px] mb-6 p-5 rounded-lg bg-white shadow-lg gap-5 max-md:flex-col"
-                  key={index}
-                >
-                  <div className="dt-content-left flex-1 border-r border-gray-200 max-md:border-r-0 max-md:border-b max-md:pb-4">
-                    <div className="profile-doctor">
-                      <ProfileDoctor
-                        doctorId={item}
-                        isShowDescriptionDoctor={true}
-                        isShowLinkDetail={true}
-                        isShowPrice={false}
-                      />
-                    </div>
-                  </div>
-                  <div className="dt-content-right flex-1 flex flex-col gap-5">
-                    <div className="doctor-schedule">
-                      <DoctorSchedule doctorIdFromParent={item} />
-                    </div>
-                    <div className="doctor-extra-infor border-t border-gray-200 pt-4">
-                      <DoctorExtraInfor doctorIdFromParent={item} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })} */}
         </div>
       </div>
     </div>

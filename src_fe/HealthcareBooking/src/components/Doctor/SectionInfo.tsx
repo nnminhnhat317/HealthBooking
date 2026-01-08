@@ -38,9 +38,10 @@ export const SectionInfo: React.FC = () => {
     const numericId = Number(id); //chuyển kiểu string|undefined sang number
     return numericId;
   };
+  const doctorId = convertIdfromUseParam(id);
   // const today = new Date().toISOString().split("T")[0];
   // const doctorId = convertIdfromUseParam(id);
-  const doctorId = Number(7); // hard code tạm thời
+  // const doctorId = Number(7); // hard code tạm thời
   // const [selectedDate, setSelectedDate] = useState<string>(today);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -50,10 +51,10 @@ export const SectionInfo: React.FC = () => {
     try {
       const data = await getScheduleByDateApi(doctorId, date); // gọi 1 api lấy lịch khám theo doctorId và date
       setSchedules(data);
-      // console.log("data schedule by date", data);
-      const data2 = await getUsersIdAp(doctorId);
-      console.log("data DoctorDetail", data2);
-      setDoctorDetail(data2);
+      console.log("data schedule by date", data);
+      const dataDoctorInfo = await getUsersIdAp(doctorId);
+      setDoctorDetail(dataDoctorInfo);
+      console.log("data DoctorDetail", dataDoctorInfo);
     } catch (error) {
       console.error(
         "Lỗi khi tải dữ liệu tại component Doctor SectionInfo:",
@@ -137,7 +138,7 @@ export const SectionInfo: React.FC = () => {
               <span className="font-semibold">
                 Phương thức thanh toán:
               </span>{" "}
-              {doctorDetail?.doctorInfor?.paymentId.value}
+              {doctorDetail?.doctorInfor?.paymentId?.value}
             </p>
 
             {/* <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -202,7 +203,7 @@ export const SectionInfo: React.FC = () => {
           <p className="text-gray-700">
             <span className="font-semibold">Giá khám:</span>{" "}
             {/* {doctor.price.toLocaleString()}đ */}
-            {doctorDetail?.doctorInfor?.priceId.value}đ
+            {doctorDetail?.doctorInfor?.priceId?.value}đ
           </p>
 
           {/* <p className="text-gray-700">

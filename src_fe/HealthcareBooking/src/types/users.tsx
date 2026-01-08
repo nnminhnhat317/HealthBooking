@@ -1,6 +1,6 @@
 import * as z from "zod";
 import type { AllCodes } from "./allcodes";
-import type { DoctorInfor } from "./doctor_info";
+import type { DoctorInfo } from "./doctor_info";
 import type { DoctorClinicSpecialtyDTO } from "./doctor_clinic_specialty";
 //usable: api users
 // export interface Users {
@@ -30,7 +30,7 @@ export interface DoctorDetail { // trang xem chi tiet bac si
   role: AllCodes;
   position: AllCodes;
 
-  doctorInfor: DoctorInfor | null;
+  doctorInfor: DoctorInfo | null;
   clinics: DoctorClinicSpecialtyDTO[];
 }
 

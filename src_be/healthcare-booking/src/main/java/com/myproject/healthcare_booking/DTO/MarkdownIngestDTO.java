@@ -15,14 +15,16 @@ public class MarkdownIngestDTO {
     private Integer clinicId;
     private Integer specialtyId;
     private String contentMarkdown;
+    private String description;
 //    private LocalDateTime updatedAt;
-    public static MarkdownIngestDTO fromEntity(Markdown md) {
+    public static MarkdownIngestDTO fromEntity(Markdown md) { // ham DTO nhan tham so là Entity Markdown md
         return new MarkdownIngestDTO(
                 md.getId(),
                 md.getDoctorId(),
                 md.getClinicId(),
                 md.getSpecialtyId(),
-                md.getContentMarkdown()
+                md.getContentMarkdown(),
+                md.getDescription()
 //                md.getUpdatedAt()
         );
     }

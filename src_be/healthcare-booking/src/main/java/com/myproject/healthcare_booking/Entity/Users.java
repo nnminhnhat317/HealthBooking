@@ -38,4 +38,10 @@ public class Users {
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("doctor")
     private List<DoctorClinicSpecialty> doctorClinicSpecialties;
+
+    // 2 truong duoi chi them neu muon truy xuat nguoc danh sach booking (Chi can khi làm phia Doctor va User)
+    @OneToMany(mappedBy = "doctor")
+    private List<Booking> doctorBookings;
+    @OneToMany(mappedBy = "patient")
+    private List<Booking> patientBookings;
 }

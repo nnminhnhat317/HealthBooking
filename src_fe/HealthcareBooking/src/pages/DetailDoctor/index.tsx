@@ -2,9 +2,18 @@ import { SectionInfo } from "@/components/Doctor/SectionInfo";
 import { getDoctorMarkdownApi } from "@/api/markdown";
 import { useEffect, useState } from "react";
 import type { Markdown } from "@/types/markdown";
+import { useParams } from "react-router";
+
 export const DetailDoctor: React.FC = () => {
   const [dataMD, setDataMD] = useState<Markdown | null>(null);
-  const doctorId = 7; // hard code tạm thời
+  // const doctorId = 7; // hard code tạm thời
+  //Lấy ID từ URL với useParam khi navigate
+  const { id } = useParams(); // lấy id từ URL
+  const convertIdfromUseParam = (id: string | undefined) => {
+    const numericId = Number(id); //chuyển kiểu string|undefined sang number
+    return numericId;
+  };
+  const doctorId = convertIdfromUseParam(id);
   const getMarkdown = async () => {
     try {
       // Gọi API để lấy dữ liệu markdown
