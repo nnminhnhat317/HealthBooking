@@ -7,30 +7,10 @@ import { getUsersIdAp } from "@/api/users";
 import { getDoctorMarkdownApi } from "@/api/markdown";
 import { TestPage } from "@/pages/TestPage";
 import type { DoctorDetail } from "@/types/users";
+import { FormBooking } from "@/components/FormBooking";
+import type { DataPropsForFormBooking } from "@/types/booking";
+import type { AllCodes } from "@/types/allcodes"
 export const SectionInfo: React.FC = () => {
-  // const doctor = {
-  //   id: 1,
-  //   name: "PGS.TS. Bác sĩ Trần Minh Hòa",
-  //   avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  //   position: "Trưởng Khoa Nội thần kinh – Bệnh viện Đại học Y",
-  //   university: "Giảng viên cao cấp Đại học Y Hà Nội",
-  //   ageRange: "Khám cho người bệnh từ 12 tuổi trở lên",
-  //   location: "Hà Nội",
-  //   scheduleDate: "Thứ 4 - 10/12",
-  //   timeSlots: [
-  //     "14:30 - 15:30",
-  //     "15:30 - 16:30",
-  //     "16:00 - 17:00",
-  //     "17:00 - 18:00",
-  //   ],
-  //   clinic: {
-  //     name: "Phòng khám Đa khoa Meditec",
-  //     address: "Số 52 Bà Triệu, Hoàn Kiếm, Hà Nội",
-  //   },
-  //   price: 500000,
-  //   insurance: "Có hỗ trợ",
-  // };
-  
   // Đoạn code lấy ID từ URL với useParam khi navigate lấy thông tin nhân viên tại vị trí đó lưu
   //vào useState doctorId
   const { id } = useParams(); // lấy id từ URL
@@ -106,12 +86,32 @@ export const SectionInfo: React.FC = () => {
     console.log("Tải dữ liệu lịch khám theo ngày:", date);
   };
 
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<DataPropsForFormBooking>();
+  // const handleBookAppointment = (item: DataPropsForFormBooking) => {
+  //   setSelectedSlot(item); // Lưu thông tin khung giờ đã chọn
+  //   setIsFormOpen(true); // Mở Modal
+  //   console.log("dat lich");
+  // };
+  // 2. Hàm xử lý khi click vào ô giờ
+  const handleBookAppointment = (time: AllCodes) => {
+    if (doctorDetail && time) {
+      const data = {
+        doctorId: doctorDetail.id,
+        date: selectedDate.toISOString().split("T")[0], // format yyyy-mm-dd
+        timeType: time.keyMap,
+      };
+      setSelectedSchedule(data);
+      setIsFormOpen(true); // Mở Modal
+      console.log("chuẩn bị data truyền cho component con FormBooking:",data)
+    }
+  };
   return (
     <div>
       {/* <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md"> */}
       <div className="">
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="HEADERRR flex flex-col md:flex-row gap-6">
           {/* Avatar */}
           <div className="flex-shrink-0">
             <img
@@ -156,23 +156,22 @@ export const SectionInfo: React.FC = () => {
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {/* {doctor.timeSlots.map((slot, idx) => (
-            <div
-              key={idx}
-              className="border rounded-lg p-3 text-center hover:bg-blue-50 cursor-pointer"
-              >
-              {slot}
-            </div>
-          ))} */}
           {schedules.map((item, id) => (
             <div
               key={id}
               className="border rounded-lg p-3 text-center hover:bg-blue-50 cursor-pointer"
+              onClick={() => handleBookAppointment(item.time)}
             >
               {item.time?.value}
             </div>
           ))}
         </div>
+        <FormBooking
+          open={isFormOpen}
+          onOpenChange={setIsFormOpen}
+          // selectedData={selectedSchedule}
+          dataSchedule={selectedSchedule}
+        />
 
         {/* <p className="mt-3 text-sm text-red-600">
           * Đây chỉ là thời gian dự kiến. Phòng khám sẽ liên hệ để xác nhận.

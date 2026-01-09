@@ -28,7 +28,7 @@ public class Users {
     @JoinColumn(name = "role_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_role"),  nullable = false)
     private Allcodes role;
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "position_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"),  nullable = false)
+    @JoinColumn(name = "position_id",referencedColumnName = "keyMap", foreignKey = @ForeignKey(name = "FK_user_position"))
     private Allcodes position;
 
     @OneToOne(mappedBy = "doctor", fetch = FetchType.LAZY)

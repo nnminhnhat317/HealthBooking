@@ -1,4 +1,4 @@
-import type { BookingFormData } from "@/types/booking";
+import type { BookingAppointmentRequest } from "@/types/booking";
 import axios from "axios";
 
 const API = axios.create({
@@ -9,11 +9,11 @@ const API = axios.create({
 });
 //POST
 export const addBookingApi = async (
-  bookingData: BookingFormData
+  bookingData: BookingAppointmentRequest
 ) => {
   try {
     const response = await API.post(
-      "/book",
+      "/book-appointment",
       bookingData
     );
     return response.data;

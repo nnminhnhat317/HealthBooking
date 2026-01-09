@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Integer> {
-    Users findByEmail(String Email);
+    Optional<Users> findByEmail(String Email);
 
     // Lấy thông tin user(doctor) với id (new)
     @Query("""

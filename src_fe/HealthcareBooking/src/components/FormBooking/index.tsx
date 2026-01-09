@@ -34,7 +34,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import type { BookingFormData } from "@/types/booking";
+import type { BookingFormData, BookingAppointmentRequest } from "@/types/booking";
 import { bookingFormSchema } from "@/types/booking";
 
 import { UserPlus } from "lucide-react";
@@ -42,9 +42,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { addBookingApi } from "@/api/booking";
-
-export function FormBooking() {
-  const [open, setOpen] = useState(false);
+interface FormBookingProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  // selectedData?: any; // Truyền thông tin bác sĩ/khung giờ nếu cần
+  // dữ liệu nhận từ component cha
+  dataSchedule: {
+    doctorId: number;
+    date: string;    // yyyy-mm-dd
+    timeType: string; // T1, T2...
+  } | undefined; // Có thể undefined nếu dữ liệu nhận từ cha không thành công
+}
+export function FormBooking({ open, onOpenChange, dataSchedule }: FormBookingProps) {
+  // const [open, setOpen] = useState(false);
   //useForm
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -65,31 +75,49 @@ export function FormBooking() {
   const onSubmit: SubmitHandler<BookingFormData> = async (
     data: z.infer<typeof bookingFormSchema>
   ) => {
-    console.log("click");
+    // KIỂM TRA QUAN TRỌNG: Đảm bảo có dữ liệu từ component cha trước khi gửi
+    if (!dataSchedule) {
+      toast.error("Thiếu dữ liệu được truyền từ component cha SectionInfo");
+      return;
+    }
+    // --- KẾT HỢP DỮ LIỆU TẠI ĐÂY ---
+    // Tạo object cuối cùng đúng chuẩn API backend yêu cầu
+    const finalPayload = {
+      ...data,// Lấy toàn bộ dữ liệu form (email, firstName...)
+      doctorId: dataSchedule.doctorId,
+      date: dataSchedule.date,
+      timeType: dataSchedule.timeType
+    };
+
     try {
-      const res = await addBookingApi(data);
-      if (!res.ok) throw new Error("Gọi API thất bại"); //lỗi sẽ chuyển sang catch
-      setOpen(false);
+      await addBookingApi(finalPayload);
+      // setOpen(false);
+      onOpenChange(false); // Đóng form khi thành công
+      // toast.success("Đặt lịch thành công");
     } catch (error) {
-      console.log("Lỗi submit form tại component DialogAdd", data);
+      console.log("Lỗi API submit form tại component FormBooking", error);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* <DialogTrigger asChild>
         <Button>
           <UserPlus className="mr-2 h-4 w-4" />
           Thêm tài khoản
         </Button>
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Thêm tài khoản</DialogTitle>
-          <DialogDescription></DialogDescription>
+          <DialogTitle>Thông tin đặt lịch khám</DialogTitle>
+          {dataSchedule && (
+            <DialogDescription>
+              Khung giờ: {dataSchedule.timeType}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         {/* begin form */}
@@ -209,11 +237,11 @@ export function FormBooking() {
                           )}
                         </Field>
                       )}
-                    />
-                  </div> */}
+                    />*/}
+                  </div> 
 
-                  {/* <div className=" basis-1/2">
-                    <Controller
+                  <div className=" basis-1/2">
+                    {/* <Controller
                       name="gender"
                       control={form.control}
                       render={({ field, fieldState }) => (

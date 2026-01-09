@@ -33,7 +33,8 @@ public class AuthController {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
         // lấy email tu db theo email cua request
-        Users userdb = userRepository.findByEmail(email);
+        Users userdb = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found by Email, AuthController"));
         // so sanh 2 password thong qua bcrypt
         if (userdb != null && passwordEncoder.matches(password, userdb.getPassword())) {
             //generate token
