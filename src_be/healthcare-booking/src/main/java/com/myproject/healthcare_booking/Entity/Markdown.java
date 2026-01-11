@@ -1,5 +1,6 @@
 package com.myproject.healthcare_booking.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class Markdown {
     private String contentHtml;
 
     private String description;
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;
+
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "doctor_id")
+//    private Users doctor;
 }

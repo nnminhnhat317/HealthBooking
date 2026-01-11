@@ -13,6 +13,29 @@ import type { DoctorDetail } from "@/types/users";
 import DoctorBookingCard from "@/components/Doctor/DoctorBookingCard";
 import type { SpecialtyDetailDTO } from "@/types/doctor_clinic_specialty";
 
+import axios from "axios";
+
+const API = axios.create({
+  baseURL: "http://localhost:8080/markdown",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+//GET
+export const getUsersListApi = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await API.get("/doctor", {
+      headers: {// đính kèm token vào header cho các request
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const TestPage: React.FC = () => {
   // Đoạn code lấy ID từ URL với useParam khi navigate lấy thông tin nhân viên tại vị trí đó lưu
   //vào useState doctorId
@@ -43,7 +66,10 @@ export const TestPage: React.FC = () => {
       );
       setData(dataTestListDoctorBySpecialtyId);
       console.log(" du lieu étt", dataTestListDoctorBySpecialtyId);
-      // console.log("data DoctorDetail", data2);
+
+      const markdown = await getUsersListApi();
+      console.log("test PYTHON MARKDOWN", markdown);
+      
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu tại component testpage:", error);
     }
@@ -101,7 +127,7 @@ export const TestPage: React.FC = () => {
               <span className="font-semibold">
                 Phương thức thanh toán:
               </span>{" "}
-              {doctorDetail?.doctorInfor?.paymentId.value}
+              {/* {doctorDetail?.doctorInfor?.paymentId.value} */}
             </p>
 
             {/* <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -166,7 +192,7 @@ export const TestPage: React.FC = () => {
           <p className="text-gray-700">
             <span className="font-semibold">Giá khám:</span>{" "}
             {/* {doctor.price.toLocaleString()}đ */}
-            {doctorDetail?.doctorInfor?.priceId.value}đ
+            {/* {doctorDetail?.doctorInfor?.priceId.value}đ */}
           </p>
 
           {/* <p className="text-gray-700">

@@ -1,5 +1,6 @@
 package com.myproject.healthcare_booking.Controller;
 
+import com.myproject.healthcare_booking.DTO.DoctorMarkdownDTO;
 import com.myproject.healthcare_booking.DTO.MarkdownIngestDTO;
 import com.myproject.healthcare_booking.Entity.Markdown;
 import com.myproject.healthcare_booking.Service.MarkdownService;
@@ -49,6 +50,11 @@ public class MarkdownController {
                 .map(MarkdownIngestDTO::fromEntity)// Vì Hibernate chỉ làm việc với Entity(Có @Id, @Table, @Entity)
                 // nên cần chuyển DTO về lại dạng Entity
                 .toList();// ->Thu stream về List<MarkdownIngestDTO>
+    }
+    // RAGwMarkdown
+    @GetMapping("/doctor")
+    public List<DoctorMarkdownDTO> getDoctorMarkdown() {
+        return markdownService.getAllDoctorMarkdown();
     }
 }
 

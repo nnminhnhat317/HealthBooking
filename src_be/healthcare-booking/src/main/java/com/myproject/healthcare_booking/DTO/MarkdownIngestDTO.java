@@ -16,8 +16,10 @@ public class MarkdownIngestDTO {
     private Integer specialtyId;
     private String contentMarkdown;
     private String description;
+
+
 //    private LocalDateTime updatedAt;
-    public static MarkdownIngestDTO fromEntity(Markdown md) { // ham DTO nhan tham so là Entity Markdown md
+    public static MarkdownIngestDTO fromEntity(Markdown md) { // ham DTO nhan tham so là Entity Markdown md de DTO co the lay nhung truong can thiet tu Enitity
         return new MarkdownIngestDTO(
                 md.getId(),
                 md.getDoctorId(),

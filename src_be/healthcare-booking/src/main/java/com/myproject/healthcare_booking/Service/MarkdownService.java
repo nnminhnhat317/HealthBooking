@@ -1,5 +1,6 @@
 package com.myproject.healthcare_booking.Service;
 
+import com.myproject.healthcare_booking.DTO.DoctorMarkdownDTO;
 import com.myproject.healthcare_booking.Entity.Markdown;
 import com.myproject.healthcare_booking.Repository.MarkdownRepository;
 import com.myproject.healthcare_booking.Repository.ScheduleRepository;
@@ -31,9 +32,13 @@ public class MarkdownService {
                 .orElse(null);
     }
 
-    //RAGwMarkdown
+    //RAGwMarkdown Specialty
     public List<Markdown> getAllSpecialtyMarkdown() {
         return markdownRepository.findBySpecialtyIdNotNull();
+    }
+    // RAGwMarkdown Doctor
+    public List<DoctorMarkdownDTO> getAllDoctorMarkdown() {
+        return markdownRepository.getDoctorMarkdownsForIngest();
     }
 }
 
