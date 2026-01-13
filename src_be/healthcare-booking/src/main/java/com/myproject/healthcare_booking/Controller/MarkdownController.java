@@ -41,7 +41,7 @@ public class MarkdownController {
         );
     }
 
-    // RAGwMarkdown
+    // RAGwMarkdown specialty
     // .map(md -> MarkdownIngestDTO.fromEntity(md))
     @GetMapping("/specialty")
     public List<MarkdownIngestDTO> getSpecialtyMarkdown() {
@@ -51,7 +51,7 @@ public class MarkdownController {
                 // nên cần chuyển DTO về lại dạng Entity
                 .toList();// ->Thu stream về List<MarkdownIngestDTO>
     }
-    // RAGwMarkdown
+    // RAGwMarkdown doctor
     @GetMapping("/doctor")
     public List<DoctorMarkdownDTO> getDoctorMarkdown() {
         return markdownService.getAllDoctorMarkdown();

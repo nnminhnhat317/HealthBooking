@@ -1,5 +1,7 @@
 package com.myproject.healthcare_booking.Controller;
 
+import com.myproject.healthcare_booking.DTO.AIScheduleDTO;
+import com.myproject.healthcare_booking.DTO.ScheduleRequestDTO;
 import com.myproject.healthcare_booking.Entity.Schedule;
 import com.myproject.healthcare_booking.Service.ScheduleService;
 import com.myproject.healthcare_booking.Service.UsersService;

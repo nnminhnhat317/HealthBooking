@@ -11,7 +11,7 @@ from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-
+# from langchain_openai import OpenAI
 load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_key) # Khởi tạo client OpenAI để gọi chat.completions.create
@@ -311,9 +311,10 @@ def generate_multi_query(query, model="gpt-3.5-turbo"):
             "role": "system",
             "content": prompt,
         },
-        {   "role": "user",
+        {   
+            "role": "user",
             "content": query
-        },
+        }
     ]
     response = client.chat.completions.create(
         model=model,
@@ -323,34 +324,121 @@ def generate_multi_query(query, model="gpt-3.5-turbo"):
     content = content.split("\n")
     return content
 
-def generate_response(question, relevant_chunks): 
+# Biến toàn cục lưu trữ lịch sử chat trong RAM
+# Cấu trúc: { "session_id_A": [msg1, msg2], "session_id_B": [msg1, msg2] }
+chat_memory = {}
+def get_chat_history(session_id):
+    # Nếu là người mới chưa có lịch sử, tạo mới kèm System Prompt
+    if session_id not in chat_memory:
+        chat_memory[session_id] = [
+            {
+                "role": "system", 
+                "content": """
+                Bạn là Trợ lý AI của BookingCare. 
+                Nhiệm vụ: Hỗ trợ tìm kiếm bác sĩ, chuyên khoa và đặt lịch khám.
+                Quy tắc: 
+                - Dựa vào ngữ cảnh để trả lời.
+                - Nếu cần thông tin (tên, sđt) để đặt lịch, hãy hỏi người dùng.
+                """
+            }
+        ]
+    return chat_memory[session_id]
+
+
+import json
+from tools import tools_schema, execute_check_schedule
+def generate_response(question, relevant_chunks):
     context = "\n\n".join(relevant_chunks) # Nối n_results đoạn kết quả thành một chuỗi ngữ cảnh lớn cách nhau bởi 2 dòng trống \n\n
     prompt = f"""
-        Bạn là Trợ lý AI của nền tảng y tế đặt lịch khám.Hỗ trợ tư vấn các thông tin cần thiết như bác sĩ và chuyên khoa liên quan đến hệ thống đặt lịch khám cho người cần khám bệnh dựa trên thông tin NGỮ CẢNH bên dưới.
+        Bạn là Trợ lý AI của nền tảng y tế đặt lịch khám. Hỗ trợ tư vấn các thông tin cần thiết như bác sĩ và chuyên khoa liên quan đến hệ thống đặt lịch khám cho người cần khám bệnh dựa trên thông tin NGỮ CẢNH bên dưới.
 
         NHIỆM VỤ:
         1. Xác định vấn đề sức khỏe của người dùng dựa trên NGỮ CẢNH.
         2. Đề xuất CHUYÊN KHOA phù hợp.
         3. QUAN TRỌNG: Dựa vào danh sách [DOCTOR] trong ngữ cảnh, hãy ĐỀ XUẤT CỤ THỂ 2-3 BÁC SĨ phù hợp nhất với chuyên khoa đó.
-        4. Cung cấp lý do ngắn gọn tại sao chọn bác sĩ đó (ví dụ: số năm kinh nghiệm, thế mạnh).
+        4. Cung cấp lý do ngắn gọn tại sao chọn bác sĩ đó (ví dụ: số năm kinh nghiệm, thế mạnh). Lưu ý ở bước 4 này: Chỉ trả lời khi người dùng yêu cầu mô tả ngắn về bác sĩ.
+        5. Nếu cần kiểm tra lịch khám thực tế, hãy gọi tool 'check_schedule_tool'.
 
-        Nếu bạn không biết câu trả lời hoặc không chắc chắn về câu trả lời, chỉ cần nói rằng bạn không biết, đừng cố gắng bịa ra câu trả lời.
+        QUY TẮC TRẢ LỜI:
+        - Khi gọi tool 'check_schedule_tool':
+            + CHỈ trích xuất doctor_id và date_text NGUYÊN VĂN từ câu hỏi user
+            + TUYỆT ĐỐI KHÔNG tự suy luận, không chuyển đổi, không đoán ngày tháng
+            + Nếu thời gian mơ hồ, vẫn truyền nguyên văn
+        - Các câu trả lời không đánh số. Trả lời dưới dạng đoạn văn hoàn chỉnh.
+        - Nếu bạn không biết câu trả lời hoặc không chắc chắn về câu trả lời, chỉ cần nói rằng bạn không biết, đừng cố gắng bịa ra câu trả lời.
 
         NGỮ CẢNH: {context}
 
         CÂU HỎI: {question}
         """
+    messages = [
+        {
+            "role": "user",
+            "content": prompt,
+        },
+    ]
     response = client.chat.completions.create( # Hàm tạo câu trả lời từ LLM
         model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
+        messages=messages,
+                                #### ĐĂNG KÝ TOOL KIỂM TRA LỊCH KHÁM (FUNCTION CALLING)
+        tools=tools_schema, # Đăng ký công cụ có thể sử dụng
+        tool_choice="auto", # Cho phép LLM tự động chọn công cụ khi cần thiết
     )
-    final_answer = response.choices[0].message.content
-    return final_answer
+    response_message = response.choices[0].message
+    # final_answer = response.choices[0].message.content # Mặc định trước khi dùng tool
+
+                                #### BƯỚC GỌI TOOL
+    tool_calls = response_message.tool_calls # tools
+    """
+        output giả định của tool_calls:
+    ChatCompletionMessageToolCall(
+        id='call_lzOq1oMvDh0N7hsTe3HLygVO',
+        type='function',
+        function=Function(
+            arguments='{"doctor_id":"Hà Nội","date_text":"celsius"}',
+            name='check_schedule_tool'
+        )
+    )
+    """
+
+    # 3. Kiểm tra xem AI có muốn gọi Tool không?
+    if tool_calls:
+        # Nếu có, ta cần thêm message của AI vào lịch sử trước
+        messages.append(response_message)
+
+        # Duyệt qua các tool mà AI muốn gọi
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_args = json.loads(tool_call.function.arguments)
+            print("function_args:", function_args)
+            # Chỉ chạy nếu đúng tên hàm
+            if function_name == "check_schedule_tool":
+                # print(f"AI đang gọi tool check_schedule với args: {function_args}")
+
+                function_response = execute_check_schedule(
+                    doctor_id = int(function_args.get("doctor_id")),
+                    date_text = function_args.get("date_text")
+                )
+
+                # 4. Gửi kết quả chạy tool lại cho AI (Role = tool)
+                messages.append({
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                    # "content": str(function_response)
+                })
+
+        # 5. Gọi OpenAI Lần 2 (Để AI tổng hợp kết quả tool thành câu trả lời)
+        second_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages
+        )
+        return second_response.choices[0].message.content
+    else:
+        # Nếu AI không gọi tool, trả về câu trả lời bình thường
+        return response_message.content
+    # return final_answer # Mặc định trước khi dùng tool
 
 def rag_pipeline(query): # dự đoán đầu ra là -> tuple[str, list[Document]]:
     aug_queries= generate_multi_query(query) # tạo thêm câu hỏi tăng cường dựa vào câu hỏi gốc
@@ -374,8 +462,27 @@ def rag_pipeline(query): # dự đoán đầu ra là -> tuple[str, list[Document
     unique_contents = set()
     for doc_list in all_results:
         for doc in doc_list:
+
+            # 12/1 test
+            # Lấy thông tin từ metadata 
+            entity_type = doc.metadata.get("entity", "unknown")
+            # Chuẩn bị nội dung để gửi cho AI
+            content_piece = doc.page_content
+            # Nếu là DOCTOR, bắt buộc phải lôi ID ra và ghi rõ vào text
+            if entity_type == "doctor":
+                doc_id = doc.metadata.get("doctorId")
+                doc_name = doc.metadata.get("doctorName")
+                
+                # KỸ THUẬT: Gắn ID vào ngay đầu đoạn văn
+                # AI sẽ đọc được: "[Hồ sơ Bác sĩ - ID: 15] ..."
+                content_piece = f"[Hồ sơ Bác sĩ - ID: {doc_id}] {content_piece}"
+            elif entity_type == "specialty":
+                content_piece = f"[Thông tin Chuyên khoa] {content_piece}"
+            # 12/1 test
+
                 # doc là đối tượng Document, ta lấy thuộc tính page_content
-            unique_contents.add(doc.page_content)
+            # unique_contents.add(doc.page_content) # gốc
+            unique_contents.add(content_piece) # 12/1 test
     
         # 2. Chuyển thành một chuỗi văn bản duy nhất (Context) để đưa vào LLM
     retrieved_context = list(unique_contents)
