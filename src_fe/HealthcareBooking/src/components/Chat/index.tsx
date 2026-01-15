@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircleIcon, XIcon } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
 
 type Message = {
   role: "user" | "assistant";
@@ -24,6 +25,13 @@ export const ChatWidget = () => {
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
 
     try {
+      // Tạo session ID duy nhất cho mỗi phiên chat
+      // 1. Lấy hoặc Tạo Session ID
+      let sessionId = localStorage.getItem("chat_session_id");
+      if (!sessionId) {
+          sessionId = uuidv4(); // Tạo chuỗi ngẫu nhiên kiểu: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+          localStorage.setItem("chat_session_id", sessionId);
+      }
       const res = await fetch("http://127.0.0.1:8000/rag/query", {
         method: "POST",
         headers: {
@@ -31,6 +39,7 @@ export const ChatWidget = () => {
         },
         body: JSON.stringify({
           question: userMessage,
+          session_id: sessionId, // Gửi kèm session ID để lưu lịch sử chat trong phiên đó
         }),
       });
 
@@ -88,7 +97,7 @@ export const ChatWidget = () => {
               <div
                 key={i}
                 className={`text-sm ${
-                  m.role === "user" ? "text-right" : "text-left"
+                  m.role === "user" ? "text-right" : "text-left" // Tin nhắn từ user thì canh phải, từ assistant thì canh trái
                 }`}
               >
                 <div

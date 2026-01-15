@@ -15,6 +15,7 @@ app.add_middleware(
 )
 class QueryRequest(BaseModel):
     question: str
+    session_id: str # tùy chọn, dùng để theo dõi phiên người dùng và lịch sử chat
 
 class QueryResponse(BaseModel):
     answer: str
@@ -25,7 +26,7 @@ class QueryResponse(BaseModel):
 def query_rag(req: QueryRequest):
     # Gọi RAG Pipeline của bạn
     # answer, retrieved_docs  = rag_pipeline(req.question) # dùng cho expansion_queries.py và DemoChromaLangchain.py, không có metadata
-    answer  = rag_pipeline(req.question) # dùng cho expansion_queries.py và DemoChromaLangchain.py, không có metadata
+    answer  = rag_pipeline(req.question, req.session_id) # dùng cho expansion_queries.py và DemoChromaLangchain.py, không có metadata
 
 
     # Chuẩn hóa thành JSON-friendly "sources"

@@ -161,7 +161,7 @@ def detect_doctor_section(header: str) -> str:
     return "other"
 
 # ii. Hàm chunk markdown bác sĩ
-def chunk_doctor_markdown(markdown: str, doctor_id: int, doctor_name_from_db: str, specialty_name: str, markdown_id: int, description: str = ""):
+def chunk_doctor_markdown(markdown: str, doctor_id: int, doctor_name_from_db: str, specialty_name: str, markdown_id: int, province_name: str, price_value: str, description: str = ""):
     lines = [l.rstrip() for l in markdown.split("\n")]
     
     chunks = []
@@ -179,7 +179,7 @@ def chunk_doctor_markdown(markdown: str, doctor_id: int, doctor_name_from_db: st
         if line.startswith("## ") and not line.startswith("### "):
             # 1. Nếu trước đó đang gom dở dữ liệu của section cũ -> Lưu lại
             if buffer and current_section:
-                chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer))
+                chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer, province_name, price_value))
                 chunk_index += 1
             
             # 2. Reset cho bác sĩ mới (trong trường hợp 1 file markdown có nhiều bác sĩ, dù hiếm)
@@ -203,7 +203,7 @@ def chunk_doctor_markdown(markdown: str, doctor_id: int, doctor_name_from_db: st
         if line.startswith("### "):
             # 1. Lưu section trước đó (ví dụ lưu phần overview hoặc phần công tác trước đó)
             if buffer and current_section:
-                chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer))
+                chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer, province_name, price_value))
                 chunk_index += 1
 
             # 2. Bắt đầu section mới
@@ -226,16 +226,19 @@ def chunk_doctor_markdown(markdown: str, doctor_id: int, doctor_name_from_db: st
 
     # --- End Loop: Lưu phần còn lại trong buffer ---
     if buffer and current_section:
-        chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer))
+        chunks.append(create_doctor_chunk(markdown_id, chunk_index, doctor_id, current_doctor_name, specialty_name, current_section, buffer, province_name, price_value))
 
     return chunks
 
 # iii. Hàm phụ trợ để tạo object chunk thống nhất (Tránh lặp code)
-def create_doctor_chunk(md_id, idx, doc_id, doc_name, spec_name, section, buffer_list):
+def create_doctor_chunk(md_id, idx, doc_id, doc_name, spec_name, section, buffer_list, prov_name, price_val):
     # Tạo nội dung ngữ nghĩa cao
     # Ví dụ: "Bác sĩ Phạm Quốc Huy (Cơ Xương Khớp) - overview: \n Hơn 30 năm kinh nghiệm..."
-    text_content = (
-        f"Thông tin Bác sĩ {doc_name} (Chuyên khoa {spec_name}) – Mục {section}:\n"
+    text_content = ( # Hiển thị thông tin bác sĩ ở đầu đoạn văn để tăng tính ngữ nghĩa
+        f"Thông tin Bác sĩ {doc_name} (Chuyên khoa {spec_name})\n"
+        f"Khu vực làm việc: {prov_name}\n"
+        f"Giá khám tham khảo: {price_val}\n"
+        f"– Mục {section}:\n"
         f"{'\n'.join(buffer_list)}"
     )
     
@@ -248,7 +251,9 @@ def create_doctor_chunk(md_id, idx, doc_id, doc_name, spec_name, section, buffer
             "doctorName": doc_name,
             "specialtyName": spec_name,
             "section": section,
-            "markdownId": md_id
+            "markdownId": md_id,
+            "provinceName": prov_name, 
+            "priceValue": price_val
         }
     }
 
@@ -260,6 +265,8 @@ for doc in doctor_list_response:
         doctor_name_from_db=doc["doctorName"], # Dùng tên từ DB làm chuẩn
         specialty_name=doc["specialtyName"],
         markdown_id=doc["id"],
+        price_value=doc["priceValue"],
+        province_name=doc["provinceName"],
         description=doc["description"]
     )
     all_chunks.extend(doc_chunks)
@@ -288,15 +295,15 @@ chromadb = Chroma(
     persist_directory="data/collections/all_specialty_markdown_langchain", 
     embedding_function=openai_ef)
 ids = [chunk["id"] for chunk in all_chunks] # id cho vector
-if chromadb._collection.count() == 0:
-    chromadb.add_documents( # (Nếu đã thêm thì ẩn dòng này để tránh re-embedding)Thêm danh sách dữ liệu markdown specialty đã chunk và danh sách id vào ChromaDB 
-        documents=specialty_doctor_markdown_Document,
-        ids=ids
-    )
-# chromadb.add_documents( # (Nếu đã thêm thì ẩn dòng này để tránh re-embedding)Thêm danh sách dữ liệu markdown specialty đã chunk và danh sách id vào ChromaDB 
+# if chromadb._collection.count() == 0:
+#     chromadb.add_documents( # (Nếu đã thêm thì ẩn dòng này để tránh re-embedding)Thêm danh sách dữ liệu markdown specialty đã chunk và danh sách id vào ChromaDB 
 #         documents=specialty_doctor_markdown_Document,
 #         ids=ids
-# )
+#     )
+chromadb.add_documents( # (Nếu đã thêm thì ẩn dòng này để tránh re-embedding)Thêm danh sách dữ liệu markdown specialty đã chunk và danh sách id vào ChromaDB 
+        documents=specialty_doctor_markdown_Document,
+        ids=ids
+)
 def generate_multi_query(query, model="gpt-3.5-turbo"):
     prompt = """
     Bạn là một trợ lý tóm tắt thông tin chuyên khoa, bác sĩ của hệ thống đặt lịch khám.
@@ -334,11 +341,23 @@ def get_chat_history(session_id):
             {
                 "role": "system", 
                 "content": """
-                Bạn là Trợ lý AI của BookingCare. 
-                Nhiệm vụ: Hỗ trợ tìm kiếm bác sĩ, chuyên khoa và đặt lịch khám.
-                Quy tắc: 
-                - Dựa vào ngữ cảnh để trả lời.
-                - Nếu cần thông tin (tên, sđt) để đặt lịch, hãy hỏi người dùng.
+                Bạn là Trợ lý AI của nền tảng y tế đặt lịch khám. Hỗ trợ tư vấn các thông tin cần thiết như bác sĩ và chuyên khoa liên quan đến hệ thống đặt lịch khám cho người cần khám bệnh dựa trên thông tin NGỮ CẢNH bên dưới.
+
+                NHIỆM VỤ:
+                1. Xác định vấn đề sức khỏe của người dùng dựa trên NGỮ CẢNH.
+                2. Đề xuất CHUYÊN KHOA phù hợp.
+                3. Hỏi về khu vực khám nếu người dùng chưa cung cấp.
+                4. Dựa vào danh sách [DOCTOR] trong ngữ cảnh, hãy ĐỀ XUẤT CỤ THỂ 2 BÁC SĨ phù hợp nhất với chuyên khoa đó.
+                5. Cung cấp lý do ngắn gọn tại sao chọn bác sĩ đó (ví dụ: số năm kinh nghiệm, thế mạnh). Lưu ý ở bước 4 này: Chỉ trả lời khi người dùng yêu cầu mô tả ngắn về bác sĩ.
+                6. Nếu cần kiểm tra lịch khám thực tế, hãy gọi tool 'check_schedule_tool'.
+
+                QUY TẮC TRẢ LỜI:
+                - Khi gọi tool 'check_schedule_tool':
+                    + CHỈ trích xuất doctor_id và date_text NGUYÊN VĂN từ câu hỏi user
+                    + TUYỆT ĐỐI KHÔNG tự suy luận, không chuyển đổi, không đoán ngày tháng
+                    + Nếu thời gian mơ hồ, vẫn truyền nguyên văn
+                - Các câu trả lời không đánh số (id, doctor_id). Trả lời dưới dạng đoạn văn hoàn chỉnh.
+                - Nếu bạn không biết câu trả lời hoặc không chắc chắn về câu trả lời, chỉ cần nói rằng 'Rất tiếc, hiện tại hệ thống chưa thể hỗ trợ đầy đủ cho yêu cầu này', đừng cố gắng bịa ra câu trả lời.
                 """
             }
         ]
@@ -347,36 +366,50 @@ def get_chat_history(session_id):
 
 import json
 from tools import tools_schema, execute_check_schedule
-def generate_response(question, relevant_chunks):
+def generate_response(question, relevant_chunks, session_id):
     context = "\n\n".join(relevant_chunks) # Nối n_results đoạn kết quả thành một chuỗi ngữ cảnh lớn cách nhau bởi 2 dòng trống \n\n
-    prompt = f"""
-        Bạn là Trợ lý AI của nền tảng y tế đặt lịch khám. Hỗ trợ tư vấn các thông tin cần thiết như bác sĩ và chuyên khoa liên quan đến hệ thống đặt lịch khám cho người cần khám bệnh dựa trên thông tin NGỮ CẢNH bên dưới.
+    # prompt = f"""
+    #     Bạn là Trợ lý AI của nền tảng y tế đặt lịch khám. Hỗ trợ tư vấn các thông tin cần thiết như bác sĩ và chuyên khoa liên quan đến hệ thống đặt lịch khám cho người cần khám bệnh dựa trên thông tin NGỮ CẢNH bên dưới.
 
-        NHIỆM VỤ:
-        1. Xác định vấn đề sức khỏe của người dùng dựa trên NGỮ CẢNH.
-        2. Đề xuất CHUYÊN KHOA phù hợp.
-        3. QUAN TRỌNG: Dựa vào danh sách [DOCTOR] trong ngữ cảnh, hãy ĐỀ XUẤT CỤ THỂ 2-3 BÁC SĨ phù hợp nhất với chuyên khoa đó.
-        4. Cung cấp lý do ngắn gọn tại sao chọn bác sĩ đó (ví dụ: số năm kinh nghiệm, thế mạnh). Lưu ý ở bước 4 này: Chỉ trả lời khi người dùng yêu cầu mô tả ngắn về bác sĩ.
-        5. Nếu cần kiểm tra lịch khám thực tế, hãy gọi tool 'check_schedule_tool'.
+    #     NHIỆM VỤ:
+    #     1. Xác định vấn đề sức khỏe của người dùng dựa trên NGỮ CẢNH.
+    #     2. Đề xuất CHUYÊN KHOA phù hợp.
+    #     3. QUAN TRỌNG: Dựa vào danh sách [DOCTOR] trong ngữ cảnh, hãy ĐỀ XUẤT CỤ THỂ 2-3 BÁC SĨ phù hợp nhất với chuyên khoa đó.
+    #     4. Cung cấp lý do ngắn gọn tại sao chọn bác sĩ đó (ví dụ: số năm kinh nghiệm, thế mạnh). Lưu ý ở bước 4 này: Chỉ trả lời khi người dùng yêu cầu mô tả ngắn về bác sĩ.
+    #     5. Nếu cần kiểm tra lịch khám thực tế, hãy gọi tool 'check_schedule_tool'.
 
-        QUY TẮC TRẢ LỜI:
-        - Khi gọi tool 'check_schedule_tool':
-            + CHỈ trích xuất doctor_id và date_text NGUYÊN VĂN từ câu hỏi user
-            + TUYỆT ĐỐI KHÔNG tự suy luận, không chuyển đổi, không đoán ngày tháng
-            + Nếu thời gian mơ hồ, vẫn truyền nguyên văn
-        - Các câu trả lời không đánh số. Trả lời dưới dạng đoạn văn hoàn chỉnh.
-        - Nếu bạn không biết câu trả lời hoặc không chắc chắn về câu trả lời, chỉ cần nói rằng bạn không biết, đừng cố gắng bịa ra câu trả lời.
+    #     QUY TẮC TRẢ LỜI:
+    #     - Khi gọi tool 'check_schedule_tool':
+    #         + CHỈ trích xuất doctor_id và date_text NGUYÊN VĂN từ câu hỏi user
+    #         + TUYỆT ĐỐI KHÔNG tự suy luận, không chuyển đổi, không đoán ngày tháng
+    #         + Nếu thời gian mơ hồ, vẫn truyền nguyên văn
+    #     - Các câu trả lời không đánh số. Trả lời dưới dạng đoạn văn hoàn chỉnh.
+    #     - Nếu bạn không biết câu trả lời hoặc không chắc chắn về câu trả lời, chỉ cần nói rằng bạn không biết, đừng cố gắng bịa ra câu trả lời.
 
-        NGỮ CẢNH: {context}
+    #     NGỮ CẢNH: {context}
 
-        CÂU HỎI: {question}
-        """
-    messages = [
-        {
-            "role": "user",
-            "content": prompt,
-        },
-    ]
+    #     CÂU HỎI: {question}
+    #     """
+    # messages = [
+    #     {
+    #         "role": "user",
+    #         "content": prompt,
+    #     },
+    # ]
+        
+        ## Thêm lịch sử chat vào messages
+    messages = get_chat_history(session_id)
+    # Chỉ đưa ngữ cảnh mới và câu hỏi vào user message (Không lặp lại luật lệ)
+    user_prompt = f"""
+    [NGỮ CẢNH]:
+    {context}
+
+    [CÂU HỎI CỦA USER]: {question}
+    """
+    # Thêm câu hỏi mới vào danh sách tin nhắn
+    messages.append({"role": "user", "content": user_prompt})
+        ## Kết thúc thêm lịch sử chat
+
     response = client.chat.completions.create( # Hàm tạo câu trả lời từ LLM
         model="gpt-4o-mini",
         messages=messages,
@@ -418,7 +451,7 @@ def generate_response(question, relevant_chunks):
                 function_response = execute_check_schedule(
                     doctor_id = int(function_args.get("doctor_id")),
                     date_text = function_args.get("date_text")
-                )
+                ) # return f"Lịch khám ngày {query_date}: " + ", ".join(available_slots)
 
                 # 4. Gửi kết quả chạy tool lại cho AI (Role = tool)
                 messages.append({
@@ -440,7 +473,7 @@ def generate_response(question, relevant_chunks):
         return response_message.content
     # return final_answer # Mặc định trước khi dùng tool
 
-def rag_pipeline(query): # dự đoán đầu ra là -> tuple[str, list[Document]]:
+def rag_pipeline(query, session_id): # dự đoán đầu ra là -> tuple[str, list[Document]]:
     aug_queries= generate_multi_query(query) # tạo thêm câu hỏi tăng cường dựa vào câu hỏi gốc
     joint_query = [ query ] + aug_queries # mảng kết hợp cả câu hỏi gốc và các câu hỏi tăng cường
 
@@ -471,9 +504,9 @@ def rag_pipeline(query): # dự đoán đầu ra là -> tuple[str, list[Document
             # Nếu là DOCTOR, bắt buộc phải lôi ID ra và ghi rõ vào text
             if entity_type == "doctor":
                 doc_id = doc.metadata.get("doctorId")
-                doc_name = doc.metadata.get("doctorName")
+                # doc_name = doc.metadata.get("doctorName")
                 
-                # KỸ THUẬT: Gắn ID vào ngay đầu đoạn văn
+                # KỸ THUẬT: Gắn ID vào ngay đầu đoạn văn nhưng sẽ ẩn bằng prompt
                 # AI sẽ đọc được: "[Hồ sơ Bác sĩ - ID: 15] ..."
                 content_piece = f"[Hồ sơ Bác sĩ - ID: {doc_id}] {content_piece}"
             elif entity_type == "specialty":
@@ -489,7 +522,7 @@ def rag_pipeline(query): # dự đoán đầu ra là -> tuple[str, list[Document
 
         # 3. Gửi cho LLM
         # Lưu ý: generate_response của bạn nên nhận vào chuỗi context này
-    answer = generate_response(query, retrieved_context)
+    answer = generate_response(query, retrieved_context, session_id)
 
     # answer = generate_response(query, retrieved_documents)
     return answer

@@ -15,7 +15,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             LocalDate date
     );
     // Goi Doctor nhu la mot cot binh thuong String doctor
-    // Dung cho API post tu PythonAI
+    // Dung cho API post tu PythonAI cua tool FC
     List<Schedule> findByDoctorIdAndDate(Integer doctorId, LocalDate date);
 }
 
